@@ -1,5 +1,5 @@
 const userModel = require('../models/user.model');
-const { validateUserInput } = require('../schemas/user.schema');
+const { validateUserInput } = require('../validation/user.validation');
 const bcrypt = require('bcrypt');
 const blacklistModel = require('../models/blackList.model');
 
