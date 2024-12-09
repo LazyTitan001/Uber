@@ -24,3 +24,26 @@ module.exports.registerUser = async (req, res, next) => {
         next(error);
     }
 }
+
+module.exports.loginUser = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+        const user = await userModel.findOne({ email }).select('+password');
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Invalid password' });
+        }
+
+        const token = user.generateAuthToken();
+        res.status(200).json({ token, user });
+    } catch (error) {
+        if (error.errors) {
+            return res.status(400).json({ errors: error.errors });
+        }
+        next(error);
+    }
+}
