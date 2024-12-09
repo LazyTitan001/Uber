@@ -19,3 +19,5 @@ The request body should be a JSON object with the following structure:
   },
   "password": "password123"
 }
+
+
