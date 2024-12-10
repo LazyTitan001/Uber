@@ -2,6 +2,7 @@ const captainModel = require("../models/captain.model");
 const { validateCaptainInput } = require("../validation/captain.validation");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const blacklistModel = require("../models/blackList.model");
 
 module.exports.registerCaptain = async (req, res, next) => {
     try {
