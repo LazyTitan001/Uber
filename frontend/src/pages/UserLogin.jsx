@@ -15,11 +15,12 @@ const UserLogin = () => {
 
     const submitHandler = async (e) => {
         e.preventDefault();
-        const userData = {
-            email: email,
-            password: password
-        }
+    const userData = {
+        email: email,
+        password: password
+    }
 
+    try {
         const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, userData)
 
         if (response.status === 200) {
@@ -28,9 +29,18 @@ const UserLogin = () => {
             localStorage.setItem('token', data.token)
             navigate('/home')
         }
+    } catch (error) {
+        if (error.response) {
+            console.error('Error response:', error.response.data);
+        } else if (error.request) {
+            console.error('Error request:', error.request);
+        } else {
+            console.error('Error message:', error.message);
+        }
+    }
 
-        setEmail("");
-        setPassword("");
+    setEmail("");
+    setPassword("");
     }
 
     return (
