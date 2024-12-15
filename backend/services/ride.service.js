@@ -70,3 +70,5 @@ module.exports.createRide = async ({ user, pickup, destination, vehicleType }) =
 
     return ride;
 }
+
+module.exports.getFare = getFare; 
