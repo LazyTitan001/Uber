@@ -148,9 +148,10 @@ const Home = () => {
         })
 
         console.log(response.data)
-        setFare(response.data)
-
-
+        const roundedFare = Object.fromEntries(
+            Object.entries(response.data).map(([key, value]) => [key, Math.round(value)])
+        )
+        setFare(roundedFare)
     }
 
     async function createRide() {
