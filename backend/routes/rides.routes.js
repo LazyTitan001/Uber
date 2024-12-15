@@ -4,7 +4,8 @@ const rideController = require('../controllers/rides.controller');
 const authMiddleware = require('../middlewares/auth.middleware');
 
 
-router.post('/create',authMiddleware.authUser,rideController.createRide);
+router.post('/create', authMiddleware.authUser, rideController.createRide);
+
 
 
 module.exports = router;

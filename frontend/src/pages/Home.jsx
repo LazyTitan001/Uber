@@ -1,4 +1,5 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
+import axios from 'axios'
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import 'remixicon/fonts/remixicon.css'
@@ -17,7 +18,6 @@ const Home = () => {
     const vehicleFoundRef = useRef(null)
     const waitingForDriverRef = useRef(null)
 
-
     const panelRef = useRef(null)
     const panelCloseRef = useRef(null)
     const [vehiclePanel, setVehiclePanel] = useState(false)
@@ -26,7 +26,39 @@ const Home = () => {
     const [vehicleFound, setVehicleFound] = useState(false)
     const [waitingForDriver, setWaitingForDriver] = useState(false)
 
+    const [pickupSuggestions, setPickupSuggestions] = useState([]);
+    const [destinationSuggestions, setDestinationSuggestions] = useState([]);
+    const [isPickup, setIsPickup] = useState(true);
 
+    const handlePickupChange = async (e) => {
+        setPickup(e.target.value)
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
+                params: { input: e.target.value },
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            })
+            setPickupSuggestions(response.data)
+        } catch {
+            console.error('Error fetching pickup suggestions:', error);
+        }
+    }
+
+    const handleDestinationChange = async (e) => {
+        setDestination(e.target.value)
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
+                params: { input: e.target.value },
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            })
+            setDestinationSuggestions(response.data)
+        } catch {
+            console.error('Error fetching destination suggestions:', error);
+        }
+    }
 
     const submitHandler = (e) => {
         e.preventDefault()
@@ -125,11 +157,10 @@ const Home = () => {
                         <input
                             onClick={() => {
                                 setPanelOpen(true)
+                                setIsPickup(true)
                             }}
                             value={pickup}
-                            onChange={(e) => {
-                                setPickup(e.target.value)
-                            }}
+                            onChange={handlePickupChange}
                             className='bg-[#eee] px-12 py-2 text-lg rounded-lg w-full'
                             type="text"
                             placeholder='Add a pick-up location'
@@ -137,18 +168,26 @@ const Home = () => {
                         <input
                             onClick={() => {
                                 setPanelOpen(true)
+                                setIsPickup(false)
                             }}
                             value={destination}
-                            onChange={(e) => {
-                                setDestination(e.target.value)
-                            }}
+                            onChange={handleDestinationChange}
                             className='bg-[#eee] px-12 py-2 text-lg rounded-lg w-full  mt-3'
                             type="text"
                             placeholder='Enter your destination' />
                     </form>
                 </div>
                 <div ref={panelRef} className='bg-white h-0'>
-                    <LocationSearchPanel setPanelOpen={setPanelOpen} setVehiclePanel={setVehiclePanel} />
+                    <LocationSearchPanel 
+                        setPanelOpen={setPanelOpen} 
+                        setVehiclePanel={setVehiclePanel} 
+                        locations={isPickup ? pickupSuggestions : destinationSuggestions} 
+                        setPickup={setPickup} 
+                        setDestination={setDestination} 
+                        isPickup={isPickup} 
+                        pickup={pickup}
+                        destination={destination}
+                    />
                 </div>
             </div>
             <div ref={vehiclePanelRef} className='fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12'>
