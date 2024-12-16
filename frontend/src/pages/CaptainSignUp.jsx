@@ -4,7 +4,7 @@ import { CaptainDataContext } from '../context/CaptainContext'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
-const CaptainSignup = () => {
+const CaptainSignUp = () => {
 
   const navigate = useNavigate()
 
@@ -26,16 +26,16 @@ const CaptainSignup = () => {
     e.preventDefault()
     const captainData = {
       fullname: {
-      firstname: firstName,
-      lastname: lastName
+        firstname: firstName,
+        lastname: lastName
       },
       email: email,
       password: password,
       vehicle: {
-      color: vehicleColor,
-      plate: vehiclePlate,
-      capacity: Number(vehicleCapacity),
-      vehicleType: vehicleType
+        color: vehicleColor,
+        plate: vehiclePlate,
+        capacity: Number(vehicleCapacity),
+        vehicleType: vehicleType
       }
     }
 
@@ -179,4 +179,4 @@ const CaptainSignup = () => {
   )
 }
 
-export default CaptainSignup
+export default CaptainSignUp
