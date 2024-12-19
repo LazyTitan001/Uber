@@ -8,12 +8,15 @@ const cookieParser = require('cookie-parser');
 const captainRoutes = require('./routes/captain.routes');
 const mapRoutes = require('./routes/maps.routes');
 const rideRoutes = require('./routes/rides.routes');
+const { initializeSocket } = require('./socket');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+initializeSocket(server);
 
 connectToDB().catch(error => {
     console.error('Failed to connect to MongoDB:', error.message);
