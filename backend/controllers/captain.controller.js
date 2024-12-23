@@ -2,6 +2,7 @@ const captainModel = require('../models/captain.model');
 const captainService = require('../services/captain.service');
 const blackListTokenModel = require('../models/blackList.model');
 const { validationResult } = require('express-validator');
+const bcrypt = require('bcrypt');
 
 
 module.exports.registerCaptain = async (req, res, next) => {
@@ -20,7 +21,8 @@ module.exports.registerCaptain = async (req, res, next) => {
     }
 
 
-    const hashedPassword = await captainModel.hashPassword(password);
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const captain = await captainService.createCaptain({
         firstname: fullname.firstname,
