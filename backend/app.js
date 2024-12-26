@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-const server = http.createServer(app); // Add this line
+const server = http.createServer(app);
 initializeSocket(server);
 
 connectToDB().catch(error => {
@@ -35,10 +35,6 @@ app.use('/maps', mapRoutes);
 app.use('/rides', rideRoutes);
 
 const PORT = process.env.PORT || 3000;
-// app.listen(PORT, () => {
-//     console.log(`Server is running on port ${PORT}`);
-// });
-
-server.listen(process.env.PORT || 3000, () => { 
-    console.log(`Server is running on port ${process.env.PORT || 3000}`);
+server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });

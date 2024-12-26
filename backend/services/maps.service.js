@@ -24,7 +24,7 @@ module.exports.getAddressCoordinate = async (address) => {
 
 module.exports.getDistanceTime = async (origin, destination) => {
     if (!origin || !destination) {
-        throw new Error('Pickup and destination are required');
+        throw new Error('Origin and destination are required');
     }
 
     const apiKey = process.env.GOOGLE_MAPS_API;
@@ -54,7 +54,7 @@ module.exports.getDistanceTime = async (origin, destination) => {
 
 module.exports.getAutoCompleteSuggestions = async (input) => {
     if (!input) {
-        throw new Error('input is required');
+        throw new Error('query is required');
     }
 
     const apiKey = process.env.GOOGLE_MAPS_API;
@@ -74,7 +74,7 @@ module.exports.getAutoCompleteSuggestions = async (input) => {
 }
 
 module.exports.getCaptainsInTheRadius = async (ltd, lng, radius) => {
-    // radius in km
+
     const captains = await captainModel.find({
         location: {
             $geoWithin: {

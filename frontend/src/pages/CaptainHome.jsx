@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import CaptainDetails from '../components/CaptainDetails'
 import RidePopUp from '../components/RidePopUp'
 import { useGSAP } from '@gsap/react'
@@ -9,6 +9,7 @@ import { useEffect, useContext } from 'react'
 import { SocketContext } from '../context/SocketContext'
 import { CaptainDataContext } from '../context/CaptainContext'
 import axios from 'axios'
+import LiveTracking from '../components/LiveTracking'
 
 const CaptainHome = () => {
 
@@ -21,6 +22,7 @@ const CaptainHome = () => {
 
     const { socket } = useContext(SocketContext)
     const { captain } = useContext(CaptainDataContext)
+    const navigate = useNavigate()
 
     useEffect(() => {
         socket.emit('join', {
@@ -49,7 +51,7 @@ const CaptainHome = () => {
     }, [])
 
     socket.on('new-ride', (data) => {
-        console.log(data)
+
         setRide(data)
         setRidePopupPanel(true)
 
@@ -60,7 +62,7 @@ const CaptainHome = () => {
         const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/confirm`, {
 
             rideId: ride._id,
-            captainId: captain._id,
+            captainId: captain._id, 
 
 
         }, {
@@ -74,7 +76,20 @@ const CaptainHome = () => {
 
     }
 
+    const handleLogout = () => {
+        const token = localStorage.getItem('token')
 
+        axios.get(`${import.meta.env.VITE_API_URL}/captains/logout`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then((response) => {
+            if (response.status === 200) {
+                localStorage.removeItem('token')
+                navigate('/captain-login')
+            }
+        })
+    }
 
     useGSAP(function () {
         if (ridePopupPanel) {
@@ -102,15 +117,15 @@ const CaptainHome = () => {
 
     return (
         <div className='h-screen'>
-            <div className='fixed p-6 top-0 flex items-center justify-between w-screen'>
-                <img className='w-16' src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="" />
-                <Link to='/captain-home' className=' h-10 w-10 bg-white flex items-center justify-center rounded-full'>
+            <div className='fixed p-6 top-0 flex items-center justify-center w-screen z-20'>
+                {/* <img className='w-16' src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="" /> */}
+                <div className='h-10 w-10 bg-white flex items-center justify-center rounded-full' onClick={handleLogout} style={{ cursor: 'pointer' }}>
                     <i className="text-lg font-medium ri-logout-box-r-line"></i>
-                </Link>
+                </div>
             </div>
             <div className='h-3/5'>
-                <img className='h-full w-full object-cover' src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif" alt="" />
-
+                {/* <img className='h-full w-full object-cover' src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif" alt="" /> */}
+                <LiveTracking></LiveTracking>
             </div>
             <div className='h-2/5 p-6'>
                 <CaptainDetails />
@@ -124,7 +139,7 @@ const CaptainHome = () => {
                 />
             </div>
             <div ref={confirmRidePopupPanelRef} className='fixed w-full h-screen z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12'>
-            <ConfirmRidePopUp
+                <ConfirmRidePopUp
                     ride={ride}
                     setConfirmRidePopupPanel={setConfirmRidePopupPanel} setRidePopupPanel={setRidePopupPanel} />
             </div>

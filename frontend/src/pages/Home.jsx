@@ -12,9 +12,18 @@ import { SocketContext } from '../context/SocketContext';
 import { useContext } from 'react';
 import { UserDataContext } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import LiveTracking from '../components/LiveTracking';
 
 const Home = () => {
-    const [pickup, setPickup] = useState('')
+    const [pickup, setPickup] = useState(() => {
+        // Default to current location if available
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                setPickup(`${position.coords.latitude}, ${position.coords.longitude}`);
+            });
+        }
+        return '';
+    })
     const [destination, setDestination] = useState('')
     const [panelOpen, setPanelOpen] = useState(false)
     const vehiclePanelRef = useRef(null)
@@ -52,7 +61,7 @@ const Home = () => {
     socket.on('ride-started', ride => {
         console.log("ride")
         setWaitingForDriver(false)
-        navigate('/riding')
+        navigate('/riding', { state: { ride } })
     })
 
 
@@ -180,6 +189,21 @@ const Home = () => {
 
     }
 
+    const handleLogout = () => {
+        const token = localStorage.getItem('token')
+
+        axios.get(`${import.meta.env.VITE_API_URL}/users/logout`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then((response) => {
+            if (response.status === 200) {
+                localStorage.removeItem('token')
+                navigate('/login')
+            }
+        })
+    }
+
     async function createRide() {
         const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create`, {
             pickup,
@@ -196,10 +220,13 @@ const Home = () => {
 
     return (
         <div className='h-screen relative overflow-hidden'>
-            <img className='w-16 absolute left-5 top-5' src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="" />
+            <div className='fixed p-6 top-0 flex items-center justify-center w-screen z-20'>
+                <div className='h-10 w-10 bg-white flex items-center justify-center rounded-full' onClick={handleLogout} style={{ cursor: 'pointer' }}>
+                    <i className="text-lg font-medium ri-logout-box-r-line"></i>
+                </div>
+            </div>
             <div className='h-screen w-screen'>
-                {/* image for temporary use  */}
-                <img className='h-full w-full object-cover' src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif" alt="" />
+                <LiveTracking />
             </div>
             <div className=' flex flex-col justify-end h-screen absolute top-0 w-full'>
                 <div className='h-[30%] p-6 bg-white relative'>
